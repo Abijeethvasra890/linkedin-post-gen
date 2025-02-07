@@ -22,29 +22,33 @@ def generate_post(length, language, tag):
 def get_prompt(length, language, tag):
     length_str = get_length_str(length)
 
-    prompt = f'''
-    Generate a LinkedIn post using the below information. No preamble.
+    prompt = f"""
+    You are an expert LinkedIn post writer. Generate a compelling LinkedIn post based on the following details:
 
-    1) Topic: {tag}
-    2) Length: {length_str}
-    3) Language: {language} 
-    The script for the generated post should always be English.
-    '''
-    # prompt = prompt.format(post_topic=tag, post_length=length_str, post_language=language)
+    - **Topic**: {tag}
+    - **Length**: {length_str}
+    - **Language**: {language} (but always write in English)
+    
+    The post should be:
+    - Engaging, thought-provoking, and professional.
+    - Well-structured with a **strong opening**, valuable insights, and a call to action.
+    - Written in an **authentic and conversational tone** suitable for LinkedIn.
+
+    """
 
     examples = few_shot.get_filtered_posts(length, language, tag)
 
-    if len(examples) > 0:
-        prompt += "4) Use the writing style as per the following examples."
+    if examples:
+        prompt += "\n### **Examples for Writing Style**"
 
-    for i, post in enumerate(examples):
+    for i, post in enumerate(examples[:2]):  # Use max 2 examples
         post_text = post['text']
-        prompt += f'\n\n Example {i+1}: \n\n {post_text}'
+        prompt += f'\n\n#### Example {i+1}:\n{post_text}'
 
-        if i == 1: # Use max two samples
-            break
-
+    prompt += "\n\n### **Now, generate the post.**"
+    
     return prompt
+
 
 
 if __name__ == "__main__":
